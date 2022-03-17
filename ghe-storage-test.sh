@@ -68,7 +68,7 @@ else
     echo -e "${RED}Storage provider must be specified with '-p' parameter${NC}"
     exit 1
   fi
-  command="Test-StorageConnection -OverrideBlobProvider $provider -OverrideConnectionString '$connection_string'"
+  command="Test-StorageConnection -OverrideBlobProvider $provider -OverrideConnectionString '$connection_string' -TreatWarningAsErrors"
 fi
 
 docker_params+=("--mount" "type=tmpfs,destination=/home/actions/.actions-dev")
