@@ -4,9 +4,9 @@ This repository to allow partners to perform a storage check against GitHub Ente
 
 Currently covered:
 - Actions Artifacts and Logs
+- Direct download links from the storage, used for Artifact Cache
 
 Currently not covered:
-- Direct download links from the storage, used for Artifact Cache
 - Packages
 
 ## Permissions used
