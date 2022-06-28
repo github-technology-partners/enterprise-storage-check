@@ -68,7 +68,7 @@ else
     echo -e "${RED}Storage provider must be specified with '-p' parameter${NC}"
     exit 1
   fi
-  command="Test-StorageConnection -OverrideBlobProvider $provider -OverrideConnectionString '$connection_string' -TreatWarningAsErrors"
+  command="Test-StorageConnection -OverrideBlobProvider $provider -OverrideConnectionString '$connection_string'"
 fi
 
 docker_params+=("--mount" "type=tmpfs,destination=/home/actions/.actions-dev")
@@ -96,16 +96,21 @@ docker_run() {
     --env-file "$temp_file" \
     "${docker_params[@]}" \
     "$image" \
-    "${pwsh_params[@]}" Invoke-LightRail.ps1 -Initial "Actions/OnPrem" -Command "$command"
+    "${pwsh_params[@]}" Invoke-LightRail.ps1 -Initial "Actions/OnPrem" -Command "$1"
 }
 
 # Launch the Actions console.
 if [[ -z "$command" ]]; then
   echo -e "${ORANGE}Starting interactive shell...${NC}"
-  docker_run
+  docker_run "$command"
 else
   echo -e "${GREEN}Running storage tests...${NC}"
+  check_warning_command="help Test-StorageConnection  | grep 'TreatWarningAsErrors'"
+  warning_check=$(docker_run "$check_warning_command")
+  if [[ ! -z "$warning_check" ]]; then
+    command="${command} -TreatWarningAsErrors"
+  fi
   # sed commands make the LightRail output more readable.
-  docker_run | sed 's/      \+/\n/g' | sed 's/    //g' | sed "s/^/LR actions> /"
+  docker_run "$command" | sed 's/      \+/\n/g' | sed 's/    //g' | sed "s/^/LR actions> /"
   exit "${PIPESTATUS[0]}"
 fi
